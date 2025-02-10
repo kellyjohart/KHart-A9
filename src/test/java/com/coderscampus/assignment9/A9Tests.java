@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.coderscampus.assignment9.service.RecipeService;
 import com.coderscampus.assignment9.service.FileService;
-import com.coderscampus.assignment9.controller.RecipeController;
+import com.coderscampus.assignment9.web.RecipeController;
 
 import java.util.List;
 
@@ -41,10 +41,7 @@ class A9Tests {
     @Test
     void filteringWorks() {
         // Test that filtering functions work
-        assertThat(recipeService.getVeganRecipes()).isNotNull();
-        assertThat(recipeService.getGlutenFreeRecipes()).isNotNull();
-        assertThat(recipeService.getVegetarianRecipes()).isNotNull();
-        assertThat(recipeService.getVeganAndGlutenFreeRecipes()).isNotNull();
+        assertThat(recipeService.getFilteredRecipes(Recipe::getVegan)).isNotNull();
         assertThat(recipeService.getAllRecipes()).isNotNull();
 
 
@@ -108,10 +105,9 @@ class A9Tests {
     @Test
     void verifyRecipeFilters() {
         List<Recipe> allRecipes = recipeService.getAllRecipes();
-        List<Recipe> veganRecipes = recipeService.getVeganRecipes();
-        List<Recipe> glutenFreeRecipes = recipeService.getGlutenFreeRecipes();
-        List<Recipe> vegetarianRecipes = recipeService.getVegetarianRecipes();
-
+        List<Recipe> veganRecipes = recipeService.getFilteredRecipes(Recipe::getVegan);
+        List<Recipe> glutenFreeRecipes = recipeService.getFilteredRecipes(Recipe::getGlutenFree);
+        List<Recipe> vegetarianRecipes = recipeService.getFilteredRecipes(Recipe::getVegetarian);
         // Verify vegan filter
         assertThat(veganRecipes)
                 .allMatch(Recipe::getVegan)

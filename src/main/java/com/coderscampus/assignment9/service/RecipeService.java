@@ -1,51 +1,28 @@
 package com.coderscampus.assignment9.service;
 import com.coderscampus.assignment9.domain.Recipe;
+import com.coderscampus.assignment9.repository.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
 @Service
 public class RecipeService {
-    private final List<Recipe> recipes = new ArrayList<>();
+    private final RecipeRepository recipeRepository;
 
-    @Autowired
-    private FileService fileService;
-
-    @PostConstruct
-    public void loadRecipes() throws IOException {
-        recipes.addAll(fileService.readFile());
+    public RecipeService(RecipeRepository recipeRepository) {
+        this.recipeRepository = recipeRepository;
     }
 
     public List<Recipe> getAllRecipes() {
-        return new ArrayList<>(recipes);
+        return recipeRepository.getAll();
     }
 
-    public List<Recipe> getGlutenFreeRecipes() {
-        return recipes.stream()
-                .filter(Recipe::getGlutenFree)
-                .collect(Collectors.toList());
-    }
-
-    public List<Recipe> getVeganRecipes() {
-        return recipes.stream()
-                .filter(Recipe::getVegan)
-                .collect(Collectors.toList());
-    }
-
-    public List<Recipe> getVeganAndGlutenFreeRecipes() {
-        return recipes.stream()
-                .filter(recipe -> recipe.getVegan() && recipe.getGlutenFree())
-                .collect(Collectors.toList());
-    }
-
-    public List<Recipe> getVegetarianRecipes() {
-        return recipes.stream()
-                .filter(Recipe::getVegetarian)
+    public List<Recipe> getFilteredRecipes(Predicate<Recipe> filteredCriteria) {
+        return getAllRecipes().stream()
+                .filter(filteredCriteria)
                 .collect(Collectors.toList());
     }
 }
